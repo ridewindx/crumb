@@ -1,4 +1,5 @@
 // Package dnscache caches DNS lookups.
+// Forked from github.com/viki-org/dnscache
 package dnscache
 
 import (
