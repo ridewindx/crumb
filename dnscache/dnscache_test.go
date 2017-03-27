@@ -5,6 +5,7 @@ import (
 	"net"
 	"testing"
 	"time"
+	"strings"
 )
 
 func TestFetchReturnsAndErrorOnInvalidLookup(t *testing.T) {
@@ -12,8 +13,8 @@ func TestFetchReturnsAndErrorOnInvalidLookup(t *testing.T) {
 	if err == nil {
 		return
 	}
-	expected := "lookup invalid.crumb.io: no such host"
-	if err.Error() != expected {
+	expected := "lookup invalid.crumb.io:"
+	if strings.HasPrefix(err.Error(), expected) {
 		t.Errorf("Expecting %q error, got %q", expected, err.Error())
 	}
 }

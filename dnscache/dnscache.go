@@ -3,6 +3,8 @@ package dnscache
 
 import (
 	"net"
+	"net/http"
+	"strings"
 	"sync"
 	"time"
 	"github.com/emirpasic/gods/maps/treemap"
@@ -17,7 +19,7 @@ type Resolver struct {
 func New(cacheSize int, refreshInterval time.Duration) *Resolver {
 	resolver := &Resolver{
 		cache: treemap.NewWithStringComparator(),
-		size: cacheSize,
+		size:  cacheSize,
 	}
 	if refreshInterval > 0 {
 		go resolver.autoRefresh(refreshInterval) // TODO: stop
@@ -88,5 +90,25 @@ func (r *Resolver) autoRefresh(interval time.Duration) {
 	for {
 		time.Sleep(interval)
 		r.Refresh()
+	}
+}
+
+type httpTransport struct {
+	*http.Transport
+	*Resolver
+}
+
+func NewRoundTripperWithDNSCached(cacheSize int, refreshInterval time.Duration) http.RoundTripper {
+	r := New(cacheSize, refreshInterval)
+	return &httpTransport{
+		Transport: &http.Transport{
+			MaxIdleConnsPerHost: 64,
+			Dial: func(network string, address string) (net.Conn, error) {
+				separator := strings.LastIndex(address, ":")
+				ip, _ := r.FetchOneString(address[:separator])
+				return net.Dial("tcp", ip+address[separator:])
+			},
+		},
+		Resolver: r,
 	}
 }
