@@ -72,7 +72,7 @@ func (r *Resolver) Refresh() {
 }
 
 func (r *Resolver) Lookup(address string) ([]net.IP, error) {
-	ips, err := net.LookupIP(address)
+	ips, err := net.LookupIP(address) // TODO: timeout
 	if err != nil {
 		return nil, err
 	}
