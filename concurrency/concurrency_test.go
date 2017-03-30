@@ -11,20 +11,20 @@ func TestAll(test *testing.T) {
 	done := All(
 		func() {
 			val1 = true
-			time.Sleep(100 * time.Millisecond)
+			time.Sleep(100 * time.Microsecond)
 		},
 		func() {
 			val2 = true
-			time.Sleep(100 * time.Millisecond)
+			time.Sleep(100 * time.Microsecond)
 		},
 		func() {
 			val3 = true
-			time.Sleep(100 * time.Millisecond)
+			time.Sleep(100 * time.Microsecond)
 		},
 	)
 	<-done
 	diff := time.Now().Sub(start)
-	if diff > 105*time.Millisecond {
+	if diff > time.Millisecond {
 		test.Errorf("All takes too long to complete")
 	}
 	if !(val1 && val2 && val3) {
