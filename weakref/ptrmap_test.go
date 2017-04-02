@@ -2,11 +2,11 @@ package weakref
 
 import (
 	"testing"
-	"github.com/stretchr/testify/assert"
 	"runtime"
 	"time"
 	"unsafe"
 	"reflect"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestWeakPtrMapTiny(t *testing.T) {
