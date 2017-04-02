@@ -1,22 +1,22 @@
 package weakref
 
 import (
-	"testing"
+	"github.com/stretchr/testify/assert"
+	"reflect"
 	"runtime"
+	"testing"
 	"time"
 	"unsafe"
-	"reflect"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestWeakPtrMapTiny(t *testing.T) {
-	type Obj struct {}
+	type Obj struct{}
 
 	// Allocate struct with pointer to avoid hitting tinyalloc.
 	// Otherwise we can't be sure when the allocation will be freed.
 	type T struct {
 		obj Obj
-		p unsafe.Pointer
+		p   unsafe.Pointer
 	}
 
 	wpm := NewWeakPtrMap()

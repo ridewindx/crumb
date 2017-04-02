@@ -8,7 +8,7 @@ import (
 
 type WeakPtrMap struct {
 	ptrMap map[uintptr]interface{}
-	mutex *sync.RWMutex
+	mutex  *sync.RWMutex
 	closed bool
 }
 
@@ -18,7 +18,7 @@ var wpmMutex = &sync.Mutex{}
 func NewWeakPtrMap() *WeakPtrMap {
 	wpm := &WeakPtrMap{
 		ptrMap: make(map[uintptr]interface{}),
-		mutex: &sync.RWMutex{},
+		mutex:  &sync.RWMutex{},
 	}
 
 	wpmMutex.Lock()
