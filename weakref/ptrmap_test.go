@@ -12,9 +12,8 @@ import (
 func TestWeakPtrMapTiny(t *testing.T) {
 	type Obj struct {}
 
-	// allocate struct with pointer to avoid hitting tinyalloc.
-	// Otherwise we can't be sure when the allocation will
-	// be freed.
+	// Allocate struct with pointer to avoid hitting tinyalloc.
+	// Otherwise we can't be sure when the allocation will be freed.
 	type T struct {
 		obj Obj
 		p unsafe.Pointer
