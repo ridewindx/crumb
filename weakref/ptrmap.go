@@ -1,20 +1,19 @@
 package weakref
 
 import (
-	"unsafe"
 	"reflect"
 	"runtime"
 	"sync"
-	"fmt"
 )
 
 type WeakPtrMap struct {
 	ptrMap map[uintptr]interface{}
 	mutex *sync.RWMutex
+	closed bool
 }
 
-var weakPtrMaps = make(map[uintptr]*WeakPtrMap)
-var weakPtrMapsMutex = &sync.Mutex{}
+var wpmRegistry = make(map[*WeakPtrMap]struct{})
+var wpmMutex = &sync.Mutex{}
 
 func NewWeakPtrMap() *WeakPtrMap {
 	wpm := &WeakPtrMap{
@@ -22,31 +21,36 @@ func NewWeakPtrMap() *WeakPtrMap {
 		mutex: &sync.RWMutex{},
 	}
 
-	weakPtrMapsMutex.Lock()
-	defer weakPtrMapsMutex.Unlock()
-	weakPtrMaps[uintptr(unsafe.Pointer(wpm))] = wpm
-
-	runtime.SetFinalizer(wpm, func(wpm interface{}) {
-		weakPtrMapsMutex.Lock()
-		defer weakPtrMapsMutex.Unlock()
-		delete(weakPtrMaps, uintptr(unsafe.Pointer(wpm.(*WeakPtrMap))))
-	})
+	wpmMutex.Lock()
+	defer wpmMutex.Unlock()
+	wpmRegistry[wpm] = struct{}{}
 
 	return wpm
 }
 
+func (wpm *WeakPtrMap) Close() {
+	wpmMutex.Lock()
+	defer wpmMutex.Unlock()
+	delete(wpmRegistry, wpm)
+
+	wpm.mutex.RLock()
+	defer wpm.mutex.RUnlock()
+	wpm.closed = true
+	wpm.ptrMap = nil
+}
+
 func (wpm *WeakPtrMap) Put(ptr interface{}, val interface{}) {
 	wpm.mutex.Lock()
+	defer wpm.mutex.Unlock()
+	if wpm.closed {
+		panic("WeakPtrMap has been closed")
+	}
 	wpm.ptrMap[reflect.ValueOf(ptr).Pointer()] = val
-	wpm.mutex.Unlock()
-
-	wpmPtr := uintptr(unsafe.Pointer(wpm))
 
 	runtime.SetFinalizer(ptr, func(ptr interface{}) {
-		fmt.Println("haha")
-		weakPtrMapsMutex.Lock()
-		defer weakPtrMapsMutex.Unlock()
-		if wpm, ok := weakPtrMaps[wpmPtr]; ok {
+		wpmMutex.Lock()
+		defer wpmMutex.Unlock()
+		if _, ok := wpmRegistry[wpm]; ok {
 			delete(wpm.ptrMap, reflect.ValueOf(ptr).Pointer())
 		}
 	})
@@ -55,6 +59,9 @@ func (wpm *WeakPtrMap) Put(ptr interface{}, val interface{}) {
 func (wpm *WeakPtrMap) Get(ptr interface{}) (val interface{}, ok bool) {
 	wpm.mutex.RLock()
 	defer wpm.mutex.RUnlock()
+	if wpm.closed {
+		panic("WeakPtrMap has been closed")
+	}
 	val, ok = wpm.ptrMap[reflect.ValueOf(ptr).Pointer()]
 	return
 }
