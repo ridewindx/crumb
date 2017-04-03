@@ -5,7 +5,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestQueuePush(t *testing.T) {
+func TestChannelQueuePush(t *testing.T) {
 	q := NewChannelQueue(10)
 
 	q.Push(`test`)
@@ -26,7 +26,7 @@ func TestQueuePush(t *testing.T) {
 	assert.True(t, q.Empty())
 }
 
-func TestQueuePop(t *testing.T) {
+func TestChannelQueuePop(t *testing.T) {
 	q := NewChannelQueue(10)
 
 	q.Push(`test`)
