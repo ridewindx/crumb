@@ -11,22 +11,22 @@ var (
 	ErrEmpty = errors.New("queue empty")
 )
 
-type Queue chan interface{}
+type ChannelQueue chan interface{}
 
-func NewQueue(capacity int) Queue {
+func NewChannelQueue(capacity int) ChannelQueue {
 	return make(chan interface{}, capacity)
 }
 
-func (q Queue) Put(item interface{}, timeout ...time.Duration) error {
+func (cq ChannelQueue) Push(item interface{}, timeout ...time.Duration) error {
 	if len(timeout) == 0 {
 		select {
-		case q <- item:
+		case cq <- item:
 			return nil
 		}
 	}
 
 	select {
-	case q <- item:
+	case cq <- item:
 		return nil
 	case <-time.After(timeout[0]):
 		if timeout[0] <= 0 {
@@ -37,16 +37,16 @@ func (q Queue) Put(item interface{}, timeout ...time.Duration) error {
 	}
 }
 
-func (q Queue) Get(timeout ...time.Duration) (interface{}, error) {
+func (cq ChannelQueue) Pop(timeout ...time.Duration) (interface{}, error) {
 	if len(timeout) == 0 {
 		select {
-		case item := <-q:
+		case item := <-cq:
 			return item, nil
 		}
 	}
 
 	select {
-	case item := <-q:
+	case item := <-cq:
 		return item, nil
 	case <-time.After(timeout[0]):
 		if timeout[0] <= 0 {
@@ -57,10 +57,10 @@ func (q Queue) Get(timeout ...time.Duration) (interface{}, error) {
 	}
 }
 
-func (q Queue) Size() int {
-	return len(q)
+func (cq ChannelQueue) Size() int {
+	return len(cq)
 }
 
-func (q Queue) Empty() bool {
-	return len(q) == 0
+func (cq ChannelQueue) Empty() bool {
+	return len(cq) == 0
 }
