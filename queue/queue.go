@@ -27,7 +27,7 @@ func (q *Queue) Pop() interface{} {
 	return q.list.Remove(e)
 }
 
-func (q *Queue) Size() int {
+func (q *Queue) Len() int {
 	return q.list.Len()
 }
 

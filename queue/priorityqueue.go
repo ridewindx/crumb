@@ -31,7 +31,7 @@ func (pq *PriorityQueue) Pop() interface{} {
 }
 
 
-func (pq *PriorityQueue) Size() int {
+func (pq *PriorityQueue) Len() int {
 	return len(pq.items)
 }
 

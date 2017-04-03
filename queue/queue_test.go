@@ -9,7 +9,7 @@ func TestQueuePushPop(t *testing.T) {
 	pq := NewQueue()
 
 	assert.True(t, pq.Empty())
-	assert.Zero(t, pq.Size())
+	assert.Zero(t, pq.Len())
 
 	pq.Push(1)
 	pq.Push(2)
@@ -17,7 +17,7 @@ func TestQueuePushPop(t *testing.T) {
 	pq.Push(4)
 	pq.Push(5)
 
-	assert.Equal(t, 5, pq.Size())
+	assert.Equal(t, 5, pq.Len())
 	assert.EqualValues(t, 1, pq.Pop())
 
 	pq.Push(6)
@@ -32,7 +32,7 @@ func TestQueuePushPop(t *testing.T) {
 	assert.EqualValues(t, 6, pq.Pop())
 	assert.EqualValues(t, 7, pq.Pop())
 
-	assert.Zero(t, pq.Size())
+	assert.Zero(t, pq.Len())
 	assert.Nil(t, pq.Pop())
 }
 

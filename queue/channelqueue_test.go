@@ -9,7 +9,7 @@ func TestChannelQueuePush(t *testing.T) {
 	q := NewChannelQueue(10)
 
 	q.Push(`test`)
-	assert.Equal(t, 1, q.Size())
+	assert.Equal(t, 1, q.Len())
 
 	result, err := q.Pop()
 	assert.Nil(t, err)
@@ -17,7 +17,7 @@ func TestChannelQueuePush(t *testing.T) {
 	assert.True(t, q.Empty())
 
 	q.Push(`test2`)
-	assert.Equal(t, 1, q.Size())
+	assert.Equal(t, 1, q.Len())
 
 	result, err = q.Pop()
 	assert.Nil(t, err)
@@ -34,7 +34,7 @@ func TestChannelQueuePop(t *testing.T) {
 	assert.Nil(t, err)
 
 	assert.Equal(t, `test`, result)
-	assert.Equal(t, 0, q.Size())
+	assert.Equal(t, 0, q.Len())
 
 	q.Push(`1`)
 	q.Push(`2`)
@@ -43,7 +43,7 @@ func TestChannelQueuePop(t *testing.T) {
 	assert.Nil(t, err)
 
 	assert.Equal(t, `1`, result)
-	assert.Equal(t, 1, q.Size())
+	assert.Equal(t, 1, q.Len())
 
 	result, err = q.Pop()
 	assert.Nil(t, err)

@@ -57,7 +57,7 @@ func (cq ChannelQueue) Pop(timeout ...time.Duration) (interface{}, error) {
 	}
 }
 
-func (cq ChannelQueue) Size() int {
+func (cq ChannelQueue) Len() int {
 	return len(cq)
 }
 
